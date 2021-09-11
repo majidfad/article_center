@@ -1,0 +1,40 @@
+{
+  "name": "article-center",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "lint": "eslint --ext .ts,.js,.vue ."
+  },
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.31.0",
+    "axios": "^0.21.4",
+    "core-js": "^3.15.1",
+    "nuxt": "^2.15.7",
+    "nuxt-property-decorator": "^2.9.1",
+    "vuetify": "^2.5.5",
+    "vuex-module-accessor": "^1.0.6"
+  },
+  "devDependencies": {
+    "@nuxt/types": "^2.15.7",
+    "@nuxt/typescript-build": "^2.1.0",
+    "@nuxtjs/eslint-config": "^3.0.0",
+    "@nuxtjs/eslint-config-typescript": "^6.0.1",
+    "@nuxtjs/eslint-module": "^2.0.0",
+    "@nuxtjs/vuetify": "^1.12.1",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-nuxt": "^1.0.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-vue": "^6.2.2",
+    "node-sass": "^4.14.1",
+    "prettier": "^2.3.2",
+    "sass-loader": "^8.0.2",
+    "vuex-module-decorators": "^1.0.1"
+  }
+}
