@@ -48,8 +48,9 @@
 <script lang="ts">
 import Vue from 'vue';
 import { getModule } from 'vuex-module-decorators';
+import axios from 'axios';
 import AuthModule from '~/store/modules/AuthModule';
-
+import RootModule from '~/store/modules/RootModule';
 // components
 import MainMenu from '~/components/Menu.vue';
 
@@ -74,6 +75,29 @@ export default Vue.extend({
 
 	beforeMount () {
 		this.authModule.initial();
+		const that = this;
+		axios.interceptors.request.use(
+			(config) => {
+				const token = that.authModule.token;
+				if (token) {
+					config.headers.Authorization = 'Token ' + token;
+				}
+				return config;
+			},
+			function (error) {
+				return Promise.reject(error);
+			}
+		);
+		axios.interceptors.response.use((response) => {
+			return response;
+		}, (error) => {
+			let errorMessage = '';
+			for (const [key, value] of Object.entries(error.response.data.errors)) {
+				errorMessage = errorMessage.concat(' ', `${key}: ${value}`);
+			}
+			getModule(RootModule, this.$store).setAlert({ status: 'error', message: errorMessage });
+			return Promise.reject(error);
+		});
 	},
 
 	methods: {

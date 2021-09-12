@@ -1,5 +1,5 @@
 <template>
-	<v-container>
+	<div>
 		<v-form
 			v-model="valid"
 		>
@@ -40,7 +40,7 @@
 				Create
 			</v-btn>
 		</v-form>
-	</v-container>
+	</div>
 </template>
 <script lang="ts">
 import Vue from 'vue';

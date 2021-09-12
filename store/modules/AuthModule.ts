@@ -103,10 +103,7 @@ async login (request: LoginUserRequest) {
 		}
 	} catch (e) {
 		this.setLoginLoadingEnabled(false);
-		this.context.commit('modules/RootModule/setAlert', {
-			status: 'error',
-			message: e
-		}, { root: true });
+		console.log(e);
 	}
 }
 
@@ -122,10 +119,7 @@ async signUp (request: NewUserRequest) {
 		}, { root: true });
 	} catch (e) {
 		this.setSignUpLoadingEnabled(false);
-		this.context.commit('modules/RootModule/setAlert', {
-			status: 'error',
-			message: e
-		}, { root: true });
+		console.log(e);
 	}
 }
 
@@ -147,10 +141,7 @@ async updateCurrentUser (request: UpdateUserRequest) {
 		}, { root: true });
 	} catch (e) {
 		this.setUpdateCurrentUserLoadingEnabled(false);
-		this.context.commit('modules/RootModule/setAlert', {
-			status: 'error',
-			message: e
-		}, { root: true });
+		console.log(e);
 	}
 }
 
@@ -162,10 +153,7 @@ async getCurrentUser () {
 			this.setUser(res.data.user);
 		}
 	} catch (e) {
-		this.context.commit('modules/RootModule/setAlert', {
-			status: 'error',
-			message: e
-		}, { root: true });
+		console.log(e);
 	}
 }
 }

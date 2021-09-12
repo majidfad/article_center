@@ -1,5 +1,5 @@
 <template>
-	<v-container>
+	<div>
 		<v-progress-circular
 			v-if="!currentUser"
 			class="circle-progress"
@@ -46,7 +46,7 @@
 				Update
 			</v-btn>
 		</v-form>
-	</v-container>
+	</div>
 </template>
 <script lang="ts">
 import Vue from 'vue';

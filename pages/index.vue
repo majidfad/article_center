@@ -1,5 +1,5 @@
 <template>
-	<v-container>
+	<div>
 		<v-progress-circular
 			v-show="!articles"
 			class="circle-progress"
@@ -51,7 +51,7 @@
 				total-visible="5"
 			/>
 		</div>
-	</v-container>
+	</div>
 </template>
 <script lang="ts">
 import Vue from 'vue';
