@@ -55,7 +55,6 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
-import { mapState } from 'vuex';
 import { getModule } from 'vuex-module-decorators';
 import ArticleModule from '~/store/modules/ArticleModule';
 import AuthModule from '~/store/modules/AuthModule';
@@ -81,9 +80,9 @@ export default Vue.extend({
 		articles (): Article[] | null {
 			return this.articleModule.articles;
 		},
-		...mapState('modules/ArticleModule', {
-			pageCount: (state: any) => state.pageCount
-		})
+		pageCount (): number {
+			return this.articleModule.pageCount;
+		}
 	},
 
 	watch: {
