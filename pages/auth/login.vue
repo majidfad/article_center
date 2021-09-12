@@ -1,6 +1,6 @@
 <template>
 	<v-card
-		class="mx-auto mt-10 mb-10"
+		class="mx-auto mt-2"
 		width="500"
 		outlined
 	>
@@ -38,10 +38,11 @@
 
 		<v-card-actions>
 			<v-btn
+				:disabled="!valid"
 				depressed
 				color="primary"
 				block
-				:loading="loginLoadingEnabled"
+				:loading="loading"
 				@click="login"
 			>
 				login
@@ -64,14 +65,31 @@ export default Vue.extend({
 					password: ''
 				}
 			}
+
+			rules: any = [
+				(value: any) => !!value || false
+			];
+
+			valid: boolean = false;
 		}();
 	},
 	computed: {
 		authModule (): AuthModule {
 			return getModule(AuthModule, this.$store);
 		},
-		loginLoadingEnabled (): boolean {
+		loading (): boolean {
 			return this.authModule.loginLoadingEnabled;
+		},
+		isLoggedIn (): boolean {
+			return this.authModule.isLoggedIn;
+		}
+	},
+
+	watch: {
+		isLoggedIn (status) {
+			if (status) {
+				this.$router.push('/');
+			}
 		}
 	},
 

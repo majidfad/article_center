@@ -4,7 +4,6 @@ import {
 	Mutation,
 	VuexModule
 } from 'vuex-module-decorators';
-
 // types
 export type AlertType = { status: string, message: string } | null;
 
@@ -15,11 +14,18 @@ export type AlertType = { status: string, message: string } | null;
 })
 
 export default class RootModule extends VuexModule {
-// state
+// States
 alert: AlertType = null;
+drawer: boolean = false;
 
+// Mutations
 @Mutation
 setAlert (data: AlertType) {
 	this.alert = data;
+}
+
+@Mutation
+public setDrawer (status: boolean) {
+	this.drawer = status;
 }
 }

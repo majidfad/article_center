@@ -2,16 +2,16 @@ import {
 	Module,
 	Mutation,
 	VuexModule,
-	Action,
-	getModule
+	Action
 } from 'vuex-module-decorators';
-import RootModule from './RootModule';
 import {
 	UserAndAuthenticationApi,
 	LoginUserRequest,
 	NewUserRequest,
-	UpdateUserRequest
+	UpdateUserRequest,
+	User
 } from '~/lib/Api/api';
+
 // types
 export type AlertType = { status: string; message: string } | null
 
@@ -21,12 +21,15 @@ export type AlertType = { status: string; message: string } | null
 	namespaced: true
 })
 export default class AuthModule extends VuexModule {
-// state
+// States
 public loginLoadingEnabled: boolean = false;
 public signUpLoadingEnabled: boolean = false;
 public updateCurrentUserLoadingEnabled: boolean = false;
+public currentUser: User | null = null;
 public token: string | null = null;
+public userName: string | null = null;
 
+// Mutations
 @Mutation
 setLoginLoadingEnabled (status: boolean) {
 	this.loginLoadingEnabled = status;
@@ -44,16 +47,46 @@ setUpdateCurrentUserLoadingEnabled (status: boolean) {
 
 @Mutation
 setToken (token: string | null) {
+	localStorage.token = token;
 	this.token = token;
 }
 
 @Mutation
-initial (token: string | null) {
+setUserName (userName: string | null) {
+	localStorage.userName = userName;
+	this.userName = userName;
+}
+
+@Mutation
+setUser (user: User | null) {
+	this.currentUser = user;
+}
+
+@Mutation
+initial () {
 	if (localStorage.token) {
-		this.token = token;
+		this.token = localStorage.token;
+	}
+
+	if (localStorage.userName) {
+		this.userName = localStorage.userName;
 	}
 }
 
+@Mutation
+logOut () {
+	this.token = null;
+	this.userName = null;
+	localStorage.removeItem('token');
+	localStorage.removeItem('userName');
+}
+
+// Getters
+get isLoggedIn (): boolean {
+	return !!this.token;
+}
+
+// Actions
 @Action
 async login (request: LoginUserRequest) {
 	this.setLoginLoadingEnabled(true);
@@ -61,15 +94,19 @@ async login (request: LoginUserRequest) {
 		this.setLoginLoadingEnabled(false);
 		const res = await new UserAndAuthenticationApi().login(request);
 		if (res.data.user && res.data.user.token) {
-			localStorage.token = res.data.user.token;
 			this.setToken(res.data.user.token);
+			this.setUserName(res.data.user.username);
+			this.context.commit('modules/RootModule/setAlert', {
+				status: 'success',
+				message: 'successfully done!'
+			}, { root: true });
 		}
-	} catch (e: any) {
+	} catch (e) {
 		this.setLoginLoadingEnabled(false);
-		getModule(RootModule).setAlert({
+		this.context.commit('modules/RootModule/setAlert', {
 			status: 'error',
-			message: e.data.message
-		});
+			message: e
+		}, { root: true });
 	}
 }
 
@@ -78,23 +115,57 @@ async signUp (request: NewUserRequest) {
 	this.setSignUpLoadingEnabled(true);
 	try {
 		this.setSignUpLoadingEnabled(false);
-		const res = await new UserAndAuthenticationApi().createUser(request);
-		console.log(res);
+		await new UserAndAuthenticationApi().createUser(request);
+		this.context.commit('modules/RootModule/setAlert', {
+			status: 'success',
+			message: 'successfully done!'
+		}, { root: true });
 	} catch (e) {
 		this.setSignUpLoadingEnabled(false);
-		console.log(e);
+		this.context.commit('modules/RootModule/setAlert', {
+			status: 'error',
+			message: e
+		}, { root: true });
 	}
 }
 
 @Action
 async updateCurrentUser (request: UpdateUserRequest) {
+	this.setUpdateCurrentUserLoadingEnabled(true);
 	try {
 		const res = await new UserAndAuthenticationApi().updateCurrentUser(
 			request
 		);
-		console.log(res);
+		this.setUpdateCurrentUserLoadingEnabled(false);
+		if (res.data) {
+			this.setUser(res.data.user);
+			this.setUserName(res.data.user.username);
+		}
+		this.context.commit('modules/RootModule/setAlert', {
+			status: 'success',
+			message: 'successfully done!'
+		}, { root: true });
 	} catch (e) {
-		console.log(e);
+		this.setUpdateCurrentUserLoadingEnabled(false);
+		this.context.commit('modules/RootModule/setAlert', {
+			status: 'error',
+			message: e
+		}, { root: true });
+	}
+}
+
+@Action
+async getCurrentUser () {
+	try {
+		const res = await new UserAndAuthenticationApi().getCurrentUser();
+		if (res.data) {
+			this.setUser(res.data.user);
+		}
+	} catch (e) {
+		this.context.commit('modules/RootModule/setAlert', {
+			status: 'error',
+			message: e
+		}, { root: true });
 	}
 }
 }

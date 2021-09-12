@@ -1,5 +1,12 @@
 <template>
 	<v-container>
+		<v-progress-circular
+			v-show="!articles"
+			class="circle-progress"
+			:size="60"
+			color="primary"
+			indeterminate
+		/>
 		<v-row
 			v-for="(article, index) in articles"
 			:key="index"
@@ -10,36 +17,34 @@
 				class="mb-2"
 				width="100%"
 			>
-				<v-card-title>
-					{{ article.title }}
-				</v-card-title>
+				<nuxt-link style="width: 100%" :to="`/article/${article.slug}`">
+					<v-card-title>
+						{{ article.title }}
+					</v-card-title>
+				</nuxt-link>
 
 				<v-card-subtitle>
 					{{ article.description }}
 				</v-card-subtitle>
 
-				<v-card-actions>
-					<v-btn
-						icon
-						@click="show[index] = !show"
-					>
-						<v-icon>{{ show[index] ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-					</v-btn>
-				</v-card-actions>
+				<v-spacer />
 
-				<v-expand-transition>
-					<div v-show="show[index]">
-						<v-divider />
-
-						<v-card-text>
-							{{ article.body }}
-						</v-card-text>
-					</div>
-				</v-expand-transition>
+				<v-chip
+					v-if="isLoggedIn"
+					class="ma-2 star"
+					:color="article.favorited ? 'orange' : 'gray'"
+					text-color="white"
+					@click="setFavorite(article.favorited, article.slug)"
+				>
+					<v-icon>
+						mdi-star
+					</v-icon>
+				</v-chip>
 			</v-card>
 		</v-row>
 		<div class="text-center">
 			<v-pagination
+				v-if="articles"
 				v-model="pageNumber"
 				class="mt-5"
 				:length="pageCount"
@@ -53,18 +58,25 @@ import Vue from 'vue';
 import { mapState } from 'vuex';
 import { getModule } from 'vuex-module-decorators';
 import ArticleModule from '~/store/modules/ArticleModule';
+import AuthModule from '~/store/modules/AuthModule';
 import { Article } from '~/lib/Api';
 
 export default Vue.extend({
 	data () {
 		return new class {
-			show: boolean[] = [];
 			pageNumber: number = 1;
 		}();
 	},
+
 	computed: {
 		articleModule (): ArticleModule {
 			return getModule(ArticleModule, this.$store);
+		},
+		authModule (): AuthModule {
+			return getModule(AuthModule, this.$store);
+		},
+		isLoggedIn (): boolean {
+			return this.authModule.isLoggedIn;
 		},
 		articles (): Article[] | null {
 			return this.articleModule.articles;
@@ -82,6 +94,28 @@ export default Vue.extend({
 
 	mounted () {
 		this.articleModule.getArticles({ limit: 20, offset: this.pageNumber });
+	},
+
+	methods: {
+		setFavorite (favorited: boolean, slug: string) {
+			if (favorited) {
+				this.articleModule.deleteArticleFavorite(slug);
+			} else {
+				this.articleModule.createArticleFavorite(slug);
+			}
+		}
 	}
 });
 </script>
+<style scoped>
+.circle-progress {
+	margin: 50px auto;
+    display: block;
+}
+
+.star {
+	position: absolute;
+    top: 0;
+    right: 0;
+}
+</style>

@@ -44,10 +44,11 @@
 
 		<v-card-actions>
 			<v-btn
+				:disabled="!valid"
 				depressed
 				color="primary"
 				block
-				:loading="signUpLoadingEnabled"
+				:loading="loading"
 				@click="signUp"
 			>
 				sign up
@@ -71,13 +72,19 @@ export default Vue.extend({
 					password: ''
 				}
 			}
+
+			rules: any = [
+				(value: any) => !!value || false
+			];
+
+			valid: boolean = false;
 		}();
 	},
 	computed: {
 		authModule (): AuthModule {
 			return getModule(AuthModule, this.$store);
 		},
-		signUpLoadingEnabled (): boolean {
+		loading (): boolean {
 			return this.authModule.signUpLoadingEnabled;
 		}
 	},

@@ -1,21 +1,15 @@
 <template>
 	<v-snackbar
-		v-model="alert"
+		:value="alert"
 		:timeout="5000"
-		:color="(alert && alert.status) || ''"
+		:color="(alert && alert.status === 'success' && 'deep-purple accent-4') || alert && alert.status"
 		top
 	>
 		{{ alert && alert.message }}
-
-		<template v-slot:action="{ attrs }">
-			<v-btn color="blue" text v-bind="attrs" @click="alert = null">
-				بستن
-			</v-btn>
-		</template>
 	</v-snackbar>
 </template>
 <script lang="ts">
-import { Vue } from 'vue-property-decorator';
+import Vue from 'vue';
 import { getModule } from 'vuex-module-decorators';
 
 import RootModule, { AlertType } from '~/store/modules/RootModule';
@@ -26,13 +20,8 @@ export default Vue.extend({
 		return new (class {})();
 	},
 	computed: {
-		alert: {
-			get (): AlertType {
-				return getModule(RootModule, this.$store).alert;
-			},
-			set (data: AlertType) {
-				getModule(RootModule, this.$store).setAlert(data);
-			}
+		alert (): AlertType {
+			return getModule(RootModule, this.$store).alert;
 		}
 	}
 });
